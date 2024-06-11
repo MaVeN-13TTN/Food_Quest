@@ -1,4 +1,3 @@
-````markdown
 # 🍽️ FoodQuest: Your Culinary Companion
 
 FoodQuest is your ultimate culinary companion, designed to revolutionize the way you discover, share, and savor recipes. Whether you're a seasoned chef or a kitchen novice, FoodQuest simplifies your cooking journey by allowing you to search, filter, and save recipes tailored to your taste and dietary needs. Embark on a delicious adventure and let FoodQuest guide you to your next favorite dish!
@@ -30,8 +29,6 @@ FoodQuest is your ultimate culinary companion, designed to revolutionize the way
    git clone https://github.com/yourusername/FoodQuest.git
    cd FoodQuest
    ```
-````
-
 2. Set up the frontend:
    ```bash
    cd frontend
