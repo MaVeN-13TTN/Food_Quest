@@ -1,12 +1,17 @@
+// SearchBar.jsx
 import { useState } from "react";
+import PropTypes from "prop-types";
 
-const SearchBar = () => {
-  const [searchTerm, setSearchTerm] = useState("");
+const SearchBar = ({ onSearch }) => {
+  const [term, setTerm] = useState("");
+
+  const handleInputChange = (e) => {
+    setTerm(e.target.value);
+  };
 
   const handleSearch = (e) => {
     e.preventDefault();
-    // Perform search logic here (e.g., API call or filter recipes)
-    console.log("Search term:", searchTerm);
+    onSearch(term);
   };
 
   return (
@@ -14,20 +19,24 @@ const SearchBar = () => {
       <div className="flex">
         <input
           type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search recipes..."
-          className="flex-grow shadow appearance-none border rounded py-2 px-3 mr-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          value={term}
+          onChange={handleInputChange}
+          className="border rounded-l px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Search for recipes..."
         />
         <button
           type="submit"
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded-r px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           Search
         </button>
       </div>
     </form>
   );
+};
+
+SearchBar.propTypes = {
+  onSearch: PropTypes.func.isRequired,
 };
 
 export default SearchBar;

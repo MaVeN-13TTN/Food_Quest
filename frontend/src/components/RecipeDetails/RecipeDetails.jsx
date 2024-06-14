@@ -1,58 +1,63 @@
-import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 const RecipeDetails = () => {
   const { id } = useParams();
-  const [recipe] = useState(null);
+  const [recipe, setRecipe] = useState(null);
 
   useEffect(() => {
-    // Fetch recipe details from API
-    // setRecipe(response.data);
+    // Fetch recipe details from API based on the `id`
+    const fetchRecipeDetails = async () => {
+      try {
+        const response = await fetch(`/api/recipes/${id}`);
+        if (response.ok) {
+          const recipeData = await response.json();
+          setRecipe(recipeData);
+        } else {
+          console.error("Failed to fetch recipe details");
+        }
+      } catch (error) {
+        console.error("Error fetching recipe details:", error);
+      }
+    };
+
+    fetchRecipeDetails();
   }, [id]);
 
-  if (!recipe) return <div>Loading...</div>;
+  if (!recipe) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <div className="p-8">
-      <h2 className="text-2xl font-bold mb-4 text-center">{recipe.title}</h2>
-      <img
-        src={recipe.image}
-        alt={recipe.title}
-        className="w-full max-w-xl mx-auto mb-4"
-      />
-      <div className="mb-4">
-        <h3 className="text-xl font-semibold">Ingredients</h3>
-        <ul className="list-disc list-inside">
-          {recipe.ingredients.map((ingredient, index) => (
-            <li key={index}>{ingredient}</li>
-          ))}
-        </ul>
-      </div>
-      <div className="mb-4">
-        <h3 className="text-xl font-semibold">Instructions</h3>
-        <ol className="list-decimal list-inside">
-          {recipe.instructions.map((instruction, index) => (
-            <li key={index}>{instruction}</li>
-          ))}
-        </ol>
-      </div>
-      <div className="mb-4">
-        <h3 className="text-xl font-semibold">Nutritional Information</h3>
-        <p>{recipe.nutritionalInfo}</p>
-      </div>
-      <div className="mb-4">
-        <h3 className="text-xl font-semibold">Rating: {recipe.rating}</h3>
-        {/* Display user reviews and option to leave a review */}
-      </div>
-      <button className="bg-blue-500 text-white px-4 py-2 rounded-md">
-        Save to Collection
-      </button>
-      <button className="bg-green-500 text-white px-4 py-2 rounded-md ml-2">
-        Share Recipe
-      </button>
-      <div className="mt-8">
-        <h3 className="text-xl font-semibold">Related Recipes</h3>
-        {/* Display related recipes */}
+    <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <div className="px-4 py-6 sm:px-0">
+        <h2 className="text-2xl font-bold mb-4">{recipe.title}</h2>
+        <img
+          className="w-full h-96 object-cover rounded-lg mb-6"
+          src={recipe.image}
+          alt={recipe.title}
+        />
+        <p className="text-lg mb-4">{recipe.description}</p>
+        <div className="mb-8">
+          <h3 className="text-xl font-medium mb-2">Ingredients</h3>
+          <ul className="list-disc pl-6">
+            {recipe.ingredients.map((ingredient, index) => (
+              <li key={index} className="mb-2">
+                {ingredient}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h3 className="text-xl font-medium mb-2">Instructions</h3>
+          <ol className="list-decimal pl-6">
+            {recipe.instructions.map((step, index) => (
+              <li key={index} className="mb-4">
+                {step}
+              </li>
+            ))}
+          </ol>
+        </div>
       </div>
     </div>
   );

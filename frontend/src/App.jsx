@@ -12,7 +12,7 @@ const App = () => {
   return (
     <Router>
       <div className="min-h-screen bg-gray-100">
-        <NavBar /> {/* Include Navbar component */}
+        <NavBar />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<LogIn />} />
