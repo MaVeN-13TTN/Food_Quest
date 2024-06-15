@@ -1,30 +1,25 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import NavBar from "./components/NavBar/NavBar";
-import Home from "./components/Home/Home";
-import LogIn from "./components/Auth/LogIn";
-import SignUp from "./components/Auth/SignUp";
-import ResetPassword from "./components/Auth/ResetPassword";
-import Profile from "./components/Profile/Profile";
-import RecipeDetails from "./components/RecipeDetails/RecipeDetails";
-import SavedRecipes from "./components/SavedRecipes/SavedRecipes";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import NavBar from "./components/NavBar";
+import Home from "./pages/Home";
+import RecipeDetails from "./pages/RecipeDetails";
+import Favorites from "./pages/Favorites";
+import GlobalState from "./context/Context";
 
-const App = () => {
+function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gray-100">
-        <NavBar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<LogIn />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/recipe/:id" element={<RecipeDetails />} />
-          <Route path="/saved-recipes" element={<SavedRecipes />} />
-        </Routes>
-      </div>
+      <GlobalState>
+        <div className="min-h-screen bg-gray-100">
+          <NavBar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/recipe/:id" element={<RecipeDetails />} />
+            <Route path="/favorites" element={<Favorites />} />
+          </Routes>
+        </div>
+      </GlobalState>
     </Router>
   );
-};
+}
 
 export default App;
