@@ -1,25 +1,29 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import NavBar from "./components/NavBar";
+import { RecipeProvider } from "./contexts/RecipeContext";
+import Navbar from "./components/NavBar";
 import Home from "./pages/Home";
-import RecipeDetails from "./pages/RecipeDetails";
-import Favorites from "./pages/Favorites";
-import GlobalState from "./context/Context";
+import RandomRecipe from "./pages/RandomRecipe";
+import FoodVideos from "./pages/FoodVideos";
+import ProfilePage from "./pages/ProfilePage";
+import RecipeDetails from "./components/RecipeDetails";
 
-function App() {
+const App = () => {
   return (
-    <Router>
-      <GlobalState>
-        <div className="min-h-screen bg-gray-100">
-          <NavBar />
+    <RecipeProvider>
+      <Router>
+        <div>
+          <Navbar />
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/random" element={<RandomRecipe />} />
+            <Route path="/videos" element={<FoodVideos />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route path="/recipe/:id" element={<RecipeDetails />} />
-            <Route path="/favorites" element={<Favorites />} />
           </Routes>
         </div>
-      </GlobalState>
-    </Router>
+      </Router>
+    </RecipeProvider>
   );
-}
+};
 
 export default App;

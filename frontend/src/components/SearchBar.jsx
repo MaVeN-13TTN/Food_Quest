@@ -1,27 +1,48 @@
-import { useContext } from "react";
-import { GlobalContext } from "../context/Context";
+import { useState } from "react";
+import PropTypes from "prop-types";
+import FilterSection from "./FilterSection";
 
-const SearchBar = () => {
-  const { searchParam, setSearchParam, handleSubmit } =
-    useContext(GlobalContext);
+const SearchBar = ({ onSearch }) => {
+  const [query, setQuery] = useState("");
+  const [filters, setFilters] = useState({
+    cuisine: "",
+    diet: "",
+    intolerances: "",
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSearch(query, filters);
+  };
+
+  const handleFilterChange = (newFilters) => {
+    setFilters(newFilters);
+  };
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-center">
-      <input
-        type="text"
-        value={searchParam}
-        onChange={(e) => setSearchParam(e.target.value)}
-        className="w-full px-4 py-2 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        placeholder="Search recipes..."
-      />
-      <button
-        type="submit"
-        className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-r-md"
-      >
-        Search
-      </button>
-    </form>
+    <div>
+      <form onSubmit={handleSubmit} className="flex items-center mb-4">
+        <input
+          type="text"
+          placeholder="Search recipes..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="w-full px-4 py-2 rounded-l-md focus:outline-none focus:ring-2 focus:ring-orange-peel"
+        />
+        <button
+          type="submit"
+          className="bg-orange-peel hover:bg-sandy-brown text-white px-4 py-2 rounded-r-md"
+        >
+          Search
+        </button>
+      </form>
+      <FilterSection filters={filters} onFilterChange={handleFilterChange} />
+    </div>
   );
+};
+
+SearchBar.propTypes = {
+  onSearch: PropTypes.func.isRequired,
 };
 
 export default SearchBar;
