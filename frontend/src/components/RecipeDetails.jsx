@@ -1,16 +1,36 @@
-import { useContext } from "react";
-import PropTypes from "prop-types";
+import { useContext, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { RecipeContext } from "../contexts/RecipeContext";
 import {
   addToFavorites,
   removeFromFavorites,
   addToBookmarks,
   removeFromBookmarks,
+  getRecipeDetails,
 } from "../utils/api";
 
-const RecipeDetails = ({ recipe }) => {
+const RecipeDetails = () => {
+  const { id } = useParams();
+  const [recipe, setRecipe] = useState(null);
   const { favorites, setFavorites, bookmarks, setBookmarks } =
     useContext(RecipeContext);
+
+  useEffect(() => {
+    const fetchRecipeDetails = async () => {
+      try {
+        const data = await getRecipeDetails(id);
+        setRecipe(data);
+      } catch (error) {
+        console.error("Error fetching recipe details:", error);
+      }
+    };
+
+    fetchRecipeDetails();
+  }, [id]);
+
+  if (!recipe) {
+    return <div>Loading...</div>;
+  }
 
   const isFavorite = favorites.some(
     (favRecipe) => favRecipe.recipe_id === recipe.id
@@ -74,16 +94,16 @@ const RecipeDetails = ({ recipe }) => {
       <div className="mb-8">
         <h2 className="text-2xl font-bold mb-2">Ingredients</h2>
         <ul className="list-disc pl-6">
-          {recipe.extendedIngredients.map((ingredient) => (
-            <li key={ingredient.id}>{ingredient.original}</li>
+          {recipe.extendedIngredients.map((ingredient, index) => (
+            <li key={ingredient.id || index}>{ingredient.original}</li>
           ))}
         </ul>
       </div>
       <div>
         <h2 className="text-2xl font-bold mb-2">Instructions</h2>
         <ol className="list-decimal pl-6">
-          {recipe.analyzedInstructions[0].steps.map((step) => (
-            <li key={step.number} className="mb-4">
+          {recipe.analyzedInstructions[0].steps.map((step, index) => (
+            <li key={step.number || index} className="mb-4">
               {step.step}
             </li>
           ))}
@@ -115,31 +135,6 @@ const RecipeDetails = ({ recipe }) => {
       </div>
     </div>
   );
-};
-
-RecipeDetails.propTypes = {
-  recipe: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    title: PropTypes.string.isRequired,
-    image: PropTypes.string.isRequired,
-    extendedIngredients: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.number.isRequired,
-        original: PropTypes.string.isRequired,
-      })
-    ).isRequired,
-    analyzedInstructions: PropTypes.arrayOf(
-      PropTypes.shape({
-        steps: PropTypes.arrayOf(
-          PropTypes.shape({
-            number: PropTypes.number.isRequired,
-            step: PropTypes.string.isRequired,
-          })
-        ).isRequired,
-      })
-    ).isRequired,
-    sourceUrl: PropTypes.string.isRequired,
-  }).isRequired,
 };
 
 export default RecipeDetails;

@@ -27,6 +27,16 @@ export const searchRecipes = async (query, cuisine) => {
   }
 };
 
+export const getRecipeDetails = async (recipeId) => {
+  try {
+    const response = await api.get(`/recipes/${recipeId}/information`);
+    return response.data;
+  } catch (error) {
+    console.error("Error getting recipe details:", error);
+    throw error;
+  }
+};
+
 export const getRandomRecipe = async () => {
   try {
     const response = await api.get("/recipes/random", {
