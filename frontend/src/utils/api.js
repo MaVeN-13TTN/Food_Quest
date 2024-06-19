@@ -1,12 +1,8 @@
 import axios from "axios";
-import dotenv from "dotenv";
-import process from "process";
 
-dotenv.config();
-
-const BASE_URL = process.env.REACT_APP_BACKEND_URL;
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-const API_KEY = process.env.REACT_APP_API_KEY;
+const BASE_URL = import.meta.env.VITE_APP_BACKEND_URL;
+const API_BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
+const API_KEY = import.meta.env.VITE_APP_API_KEY;
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -152,6 +148,7 @@ export const getBookmarks = async () => {
     throw error;
   }
 };
+
 export const getRandomFoodJoke = async () => {
   try {
     const response = await api.get("/food/jokes/random");

@@ -20,9 +20,6 @@ from django.views.generic import RedirectView
 
 urlpatterns = [
     # ...
-    path(
-        "", RedirectView.as_view(url="/api/auth/")
-    ),  # Redirect the root URL to the auth API
     path("api/auth/", include("authentication.urls")),
     path("api/favorites/", include("favorites.urls")),
     path("api/bookmarks/", include("bookmarks.urls")),

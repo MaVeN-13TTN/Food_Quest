@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { loginUser } from "../../utils/api";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -11,26 +12,13 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Perform login logic here (e.g., API call)
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (response.ok) {
-        // Login successful, redirect to dashboard or home page
-        navigate("/dashboard");
-      } else {
-        // Login failed, display error message
-        const errorData = await response.json();
-        setError(errorData.message);
-      }
+      const response = await loginUser({ email, password });
+      localStorage.setItem("token", response.token);
+      navigate("/");
     } catch (error) {
-      console.error("Login error:", error);
-      setError("An error occurred. Please try again.");
+      setError(
+        error.response?.data?.message || "An error occurred. Please try again."
+      );
     }
   };
 
@@ -93,14 +81,6 @@ const Login = () => {
               className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
             >
               Sign Up
-            </Link>
-          </div>
-          <div className="text-center">
-            <Link
-              to="/reset-password"
-              className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
-            >
-              Forgot Password?
             </Link>
           </div>
         </form>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { registerUser } from "../../utils/api";
 
 const SignUp = () => {
   const [name, setName] = useState("");
@@ -12,26 +13,14 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Perform signup logic here (e.g., API call)
-      const response = await fetch("/api/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name, email, password }),
-      });
-
-      if (response.ok) {
-        // Signup successful, redirect to login page or dashboard
-        navigate("/login");
-      } else {
-        // Signup failed, display error message
-        const errorData = await response.json();
-        setError(errorData.message);
-      }
+      const userData = { name, email, password };
+      await registerUser(userData);
+      // Registration successful, redirect to login page
+      navigate("/login");
     } catch (error) {
-      console.error("Signup error:", error);
-      setError("An error occurred. Please try again.");
+      setError(
+        error.response?.data?.message || "An error occurred. Please try again."
+      );
     }
   };
 

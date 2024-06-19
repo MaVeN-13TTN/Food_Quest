@@ -8,7 +8,6 @@ import ProfilePage from "./pages/ProfilePage";
 import RecipeDetails from "./components/RecipeDetails";
 import Login from "./components/auth/LogIn";
 import SignUp from "./components/auth/SignUp";
-import ResetPassword from "./components/auth/ResetPassword";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -61,7 +60,6 @@ const App = () => {
             />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
