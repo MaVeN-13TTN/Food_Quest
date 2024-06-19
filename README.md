@@ -82,7 +82,7 @@ FoodQuest is a modern and user-friendly web application that allows users to exp
      ```bash
      npm start
      ```
-4. Visit `http://localhost:5137` and start your culinary adventure!
+4. Visit `http://localhost:5173` and start your culinary adventure!
 
 ## 🤝 Contribute
 
