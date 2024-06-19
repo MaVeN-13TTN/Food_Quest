@@ -10,7 +10,7 @@ const Home = () => {
 
   const handleSearch = async (query, filters) => {
     try {
-      const data = await searchRecipes(query, filters);
+      const data = await searchRecipes(query, filters.cuisine);
       setRecipes(data.results);
     } catch (error) {
       console.error("Error searching recipes:", error);

@@ -1,56 +1,65 @@
-import { useEffect, useState, useContext } from "react";
-import { useParams } from "react-router-dom";
+import { useContext } from "react";
 import PropTypes from "prop-types";
 import { RecipeContext } from "../contexts/RecipeContext";
-import { getRecipeDetails } from "../utils/api";
+import {
+  addToFavorites,
+  removeFromFavorites,
+  addToBookmarks,
+  removeFromBookmarks,
+} from "../utils/api";
 
-const RecipeDetails = () => {
-  const { id } = useParams();
-  const [recipe, setRecipe] = useState(null);
-  const {
-    favorites,
-    bookmarks,
-    addToFavorites,
-    removeFromFavorites,
-    addToBookmarks,
-    removeFromBookmarks,
-  } = useContext(RecipeContext);
+const RecipeDetails = ({ recipe }) => {
+  const { favorites, setFavorites, bookmarks, setBookmarks } =
+    useContext(RecipeContext);
 
-  useEffect(() => {
-    const fetchRecipeDetails = async () => {
-      try {
-        const data = await getRecipeDetails(id);
-        setRecipe(data);
-      } catch (error) {
-        console.error("Error fetching recipe details:", error);
-      }
-    };
-
-    fetchRecipeDetails();
-  }, [id]);
-
-  if (!recipe) {
-    return <div>Loading...</div>;
-  }
-
-  const isFavorite = favorites.some((favRecipe) => favRecipe.id === recipe.id);
+  const isFavorite = favorites.some(
+    (favRecipe) => favRecipe.recipe_id === recipe.id
+  );
   const isBookmarked = bookmarks.some(
-    (bookmarkedRecipe) => bookmarkedRecipe.id === recipe.id
+    (bookmarkedRecipe) => bookmarkedRecipe.recipe_id === recipe.id
   );
 
-  const handleFavoriteClick = () => {
-    if (isFavorite) {
-      removeFromFavorites(recipe.id);
-    } else {
-      addToFavorites(recipe);
+  const handleFavoriteClick = async () => {
+    try {
+      if (isFavorite) {
+        await removeFromFavorites(recipe.id);
+        setFavorites(
+          favorites.filter((favRecipe) => favRecipe.recipe_id !== recipe.id)
+        );
+      } else {
+        const newFavorite = await addToFavorites({
+          recipe_id: recipe.id,
+          title: recipe.title,
+          image_url: recipe.image,
+          source_url: recipe.sourceUrl,
+        });
+        setFavorites([...favorites, newFavorite]);
+      }
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
     }
   };
 
-  const handleBookmarkClick = () => {
-    if (isBookmarked) {
-      removeFromBookmarks(recipe.id);
-    } else {
-      addToBookmarks(recipe);
+  const handleBookmarkClick = async () => {
+    try {
+      if (isBookmarked) {
+        await removeFromBookmarks(recipe.id);
+        setBookmarks(
+          bookmarks.filter(
+            (bookmarkedRecipe) => bookmarkedRecipe.recipe_id !== recipe.id
+          )
+        );
+      } else {
+        const newBookmark = await addToBookmarks({
+          recipe_id: recipe.id,
+          title: recipe.title,
+          image_url: recipe.image,
+          source_url: recipe.sourceUrl,
+        });
+        setBookmarks([...bookmarks, newBookmark]);
+      }
+    } catch (error) {
+      console.error("Error toggling bookmark:", error);
     }
   };
 
@@ -63,6 +72,24 @@ const RecipeDetails = () => {
         className="w-full h-96 object-cover mb-8"
       />
       <div className="mb-8">
+        <h2 className="text-2xl font-bold mb-2">Ingredients</h2>
+        <ul className="list-disc pl-6">
+          {recipe.extendedIngredients.map((ingredient) => (
+            <li key={ingredient.id}>{ingredient.original}</li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <h2 className="text-2xl font-bold mb-2">Instructions</h2>
+        <ol className="list-decimal pl-6">
+          {recipe.analyzedInstructions[0].steps.map((step) => (
+            <li key={step.number} className="mb-4">
+              {step.step}
+            </li>
+          ))}
+        </ol>
+      </div>
+      <div className="mt-8">
         <button
           onClick={handleFavoriteClick}
           className={`mr-4 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-orange-peel ${
@@ -85,42 +112,6 @@ const RecipeDetails = () => {
         >
           {isBookmarked ? "Remove Bookmark" : "Bookmark Recipe"}
         </button>
-      </div>
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold mb-2">Ingredients</h2>
-        <ul className="list-disc pl-6">
-          {recipe.extendedIngredients.map((ingredient) => (
-            <li key={ingredient.id}>{ingredient.original}</li>
-          ))}
-        </ul>
-      </div>
-      <div>
-        <h2 className="text-2xl font-bold mb-2">Instructions</h2>
-        <ol className="list-decimal pl-6">
-          {recipe.analyzedInstructions[0].steps.map((step) => (
-            <li key={step.number} className="mb-4">
-              {step.step}
-            </li>
-          ))}
-        </ol>
-      </div>
-      <div className="mt-8">
-        <h2 className="text-2xl font-bold mb-2">Nutrition Information</h2>
-        <p>{`Servings: ${recipe.servings}`}</p>
-        <p>{`Ready in: ${recipe.readyInMinutes} minutes`}</p>
-        <p>{`Calories: ${
-          recipe.nutrition.nutrients.find((n) => n.name === "Calories").amount
-        } kcal`}</p>
-        <p>{`Fat: ${
-          recipe.nutrition.nutrients.find((n) => n.name === "Fat").amount
-        } g`}</p>
-        <p>{`Carbohydrates: ${
-          recipe.nutrition.nutrients.find((n) => n.name === "Carbohydrates")
-            .amount
-        } g`}</p>
-        <p>{`Protein: ${
-          recipe.nutrition.nutrients.find((n) => n.name === "Protein").amount
-        } g`}</p>
       </div>
     </div>
   );
@@ -147,16 +138,7 @@ RecipeDetails.propTypes = {
         ).isRequired,
       })
     ).isRequired,
-    nutrition: PropTypes.shape({
-      nutrients: PropTypes.arrayOf(
-        PropTypes.shape({
-          name: PropTypes.string.isRequired,
-          amount: PropTypes.number.isRequired,
-        })
-      ).isRequired,
-    }).isRequired,
-    servings: PropTypes.number.isRequired,
-    readyInMinutes: PropTypes.number.isRequired,
+    sourceUrl: PropTypes.string.isRequired,
   }).isRequired,
 };
 

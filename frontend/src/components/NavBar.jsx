@@ -1,6 +1,13 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const NavBar = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
   return (
     <nav className="bg-reseda-green">
       <div className="container mx-auto px-6 py-3">
@@ -21,6 +28,12 @@ const NavBar = () => {
             <Link to="/profile" className="text-white hover:text-mindaro">
               Profile
             </Link>
+            <button
+              onClick={handleLogout}
+              className="text-white hover:text-mindaro"
+            >
+              Logout
+            </button>
           </div>
         </div>
       </div>
