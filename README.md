@@ -1,26 +1,36 @@
 # 🍽️ FoodQuest: Your Culinary Companion
 
-FoodQuest is your ultimate culinary companion, designed to revolutionize the way you discover, share, and savor recipes. Whether you're a seasoned chef or a kitchen novice, FoodQuest simplifies your cooking journey by allowing you to search, filter, and save recipes tailored to your taste and dietary needs. Embark on a delicious adventure and let FoodQuest guide you to your next favorite dish!
+FoodQuest is a modern and user-friendly web application that allows users to explore and discover recipes, search for food-related videos, and manage their favorite and bookmarked recipes. Built using React, Django, and the Spoonacular API, FoodQuest provides an immersive and interactive experience for food enthusiasts.
 
 ## ✨ Key Features
 
-- 🔍 **Smart Recipe Search**: Find recipes effortlessly using ingredients, keywords, or categories.
-- 🌿 **Personalized Filtering**: Tailor results to your dietary needs and preferences (vegan, gluten-free, keto, etc.).
-- 🔐 **Secure User Profiles**: Register and login securely to access personalized features.
-- 📝 **Recipe Contribution**: Share your culinary creations with the vibrant FoodQuest community.
-- ❤️ **Favorite Collections**: Curate your own digital cookbook with saved recipes.
-- ⭐ **Community Feedback**: Rate and review recipes to help others discover new favorites.
-- 📱 **Cook Anywhere**: Enjoy a seamless experience with our responsive design optimized for any device.
-- 🔄 **Automatic Updates**: Stay up-to-date with the latest recipes and features through automatic updates.
+- 🔍 **Recipe Search and Exploration**: Find recipes effortlessly using keywords, ingredients, cuisine types, or dietary restrictions.
+- 📝 **Recipe Details**: Access detailed recipe information, including ingredients list, step-by-step instructions, preparation and cooking times, nutritional information, and high-resolution images.
+- 🎲 **Random Recipe Generator**: Generate and explore random recipes for culinary inspiration and variety.
+- ⭐ **Favorites and Bookmarks**: Save your favorite recipes or bookmark them for future reference in your personalized collections.
+- 😂 **Food Jokes and Trivia**: Enjoy random food-related jokes and trivia facts for a fun and engaging experience.
+- 🥗 **Dietary Preferences and Filters**: Set your dietary preferences and apply filters to the recipe search and display based on your needs.
+- 📱 **Responsive Design**: Seamlessly access FoodQuest across different devices and screen sizes with our responsive design.
+- 🔐 **User Authentication**: Register and login securely to access personalized features and save your preferences.
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: React, Tailwind CSS
-- **Backend**: Django, Django REST Framework, PostgreSQL
-- **Security**: Django Allauth
-- **Data Flow**: Axios
-- **Deployment**: AWS (Backend and Frontend)
-- **Testing**: Jest, Pytest
+- **Frontend**:
+  - React: JavaScript library for building user interfaces
+  - TailwindCSS: Utility-first CSS framework for rapid UI development
+- **Backend**:
+  - Django: Python web framework for building web applications
+  - Django REST Framework: Toolkit for building Web APIs with Django
+  - PostgreSQL: Powerful open-source relational database system
+- **External API**:
+  - Spoonacular API: Comprehensive food and recipe API for accessing recipe data, food images, and more
+- **Security**:
+  - Django REST Framework SimpleJWT: Library for JSON Web Token authentication in Django
+- **Data Flow**:
+  - Axios: Promise-based HTTP client for making API requests
+- **Testing**:
+  - Jest: JavaScript testing framework for unit and integration tests
+  - Django's built-in testing framework: Testing tools for backend functionality
 
 ## 🚀 Quick Start
 
@@ -29,20 +39,50 @@ FoodQuest is your ultimate culinary companion, designed to revolutionize the way
    git clone https://github.com/yourusername/FoodQuest.git
    cd FoodQuest
    ```
-2. Set up the frontend:
-   ```bash
-   cd frontend
-   npm install
-   npm start
-   ```
-3. Prepare the backend:
-   ```bash
-   cd ../backend
-   pip install -r requirements.txt
-   python manage.py migrate
-   python manage.py runserver
-   ```
-4. Visit `http://localhost:3000` and start your culinary adventure!
+2. Set up the backend:
+   - Navigate to the backend directory:
+     ```bash
+     cd backend
+     ```
+   - Create a virtual environment:
+     ```bash
+     python -m venv env
+     ```
+   - Activate the virtual environment:
+     - For Windows:
+       ```
+       .\env\Scripts\activate
+       ```
+     - For Unix or Linux:
+       ```
+       source env/bin/activate
+       ```
+   - Install the backend dependencies:
+     ```bash
+     pip install -r requirements.txt
+     ```
+   - Apply database migrations:
+     ```bash
+     python manage.py migrate
+     ```
+   - Start the backend server:
+     ```bash
+     python manage.py runserver
+     ```
+3. Set up the frontend:
+   - Navigate to the frontend directory:
+     ```bash
+     cd ../frontend
+     ```
+   - Install the frontend dependencies:
+     ```bash
+     npm install
+     ```
+   - Start the frontend development server:
+     ```bash
+     npm start
+     ```
+4. Visit `http://localhost:5137` and start your culinary adventure!
 
 ## 🤝 Contribute
 
@@ -60,7 +100,8 @@ FoodQuest is released under the [MIT License](https://opensource.org/licenses/MI
 
 ## 🙌 Acknowledgements
 
-- OpenAI for AI assistance in developing FoodQuest
-- Unsplash for providing high-quality food photography
+- Spoonacular API for providing comprehensive food and recipe data
+- TailwindCSS for the utility-first CSS framework
+- React and Django communities for their valuable resources and support
 
-👨‍🍳 Happy Cooking! Let FoodQuest guide you to your next culinary masterpiece. 🥘
+👨‍🍳 Happy Cooking! Let FoodQuest guide you on your culinary journey. 🥘
