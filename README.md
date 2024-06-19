@@ -1,6 +1,6 @@
-# 🍽️ FoodQuest: Your Culinary Companion
+# 🍽️ Food Quest: Your Culinary Companion
 
-FoodQuest is a modern and user-friendly web application that allows users to explore and discover recipes, search for food-related videos, and manage their favorite and bookmarked recipes. Built using React, Django, and the Spoonacular API, FoodQuest provides an immersive and interactive experience for food enthusiasts.
+Food Quest is a modern and user-friendly web application that allows users to explore and discover recipes, search for food-related videos, and manage their favorite and bookmarked recipes. Built using React, Vite, Django, and the Spoonacular API, FoodQuest provides an immersive and interactive experience for food enthusiasts.
 
 ## ✨ Key Features
 
@@ -17,6 +17,7 @@ FoodQuest is a modern and user-friendly web application that allows users to exp
 
 - **Frontend**:
   - React: JavaScript library for building user interfaces
+  - Vite: Fast build tool and development server for modern web applications
   - TailwindCSS: Utility-first CSS framework for rapid UI development
 - **Backend**:
   - Django: Python web framework for building web applications
@@ -36,8 +37,8 @@ FoodQuest is a modern and user-friendly web application that allows users to exp
 
 1. Clone the project:
    ```bash
-   git clone https://github.com/yourusername/FoodQuest.git
-   cd FoodQuest
+   git clone https://github.com/MaVeN-13TTN/Food_Quest.git
+   cd Food_Quest
    ```
 2. Set up the backend:
    - Navigate to the backend directory:
@@ -80,7 +81,7 @@ FoodQuest is a modern and user-friendly web application that allows users to exp
      ```
    - Start the frontend development server:
      ```bash
-     npm start
+     npm run dev
      ```
 4. Visit `http://localhost:5173` and start your culinary adventure!
 
@@ -102,6 +103,6 @@ FoodQuest is released under the [MIT License](https://opensource.org/licenses/MI
 
 - Spoonacular API for providing comprehensive food and recipe data
 - TailwindCSS for the utility-first CSS framework
-- React and Django communities for their valuable resources and support
+- React, Vite, and Django communities for their valuable resources and support
 
 👨‍🍳 Happy Cooking! Let FoodQuest guide you on your culinary journey. 🥘
