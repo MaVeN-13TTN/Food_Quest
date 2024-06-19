@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { registerUser } from "../../utils/api";
 
 const SignUp = () => {
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -13,11 +13,13 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const userData = { name, email, password };
+      const userData = { username, email, password };
+      console.log("User data being sent:", userData);
       await registerUser(userData);
       // Registration successful, redirect to login page
       navigate("/login");
     } catch (error) {
+      console.log("Error response from backend:", error.response?.data);
       setError(
         error.response?.data?.message || "An error occurred. Please try again."
       );
@@ -32,16 +34,16 @@ const SignUp = () => {
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label
-              htmlFor="name"
+              htmlFor="username"
               className="block text-gray-700 font-bold mb-2"
             >
-              Name
+              Username
             </label>
             <input
               type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               required
             />
