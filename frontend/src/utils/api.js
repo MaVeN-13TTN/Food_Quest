@@ -35,42 +35,71 @@ backendApi.interceptors.request.use(
 );
 
 // Add a response interceptor to handle token refresh
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach(prom => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
 backendApi.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    // If the error is 401 and we haven't tried to refresh the token yet
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-
-      try {
-        // Try to refresh the token
-        const refreshToken = localStorage.getItem('refresh_token');
-        if (!refreshToken) {
-          throw new Error('No refresh token available');
-        }
-
-        const response = await axios.post(`${BASE_URL}/api/auth/token/refresh/`, {
-          refresh: refreshToken
-        });
-
-        const { access } = response.data;
-        localStorage.setItem('access_token', access);
-
-        // Retry the original request with the new token
-        originalRequest.headers.Authorization = `Bearer ${access}`;
-        return backendApi(originalRequest);
-      } catch (refreshError) {
-        // If refresh fails, clear tokens and redirect to login
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        window.location.href = '/login';
-        return Promise.reject(refreshError);
-      }
+    // If error is not 401 or request has already been retried, reject
+    if (error.response?.status !== 401 || originalRequest._retry) {
+      return Promise.reject(error);
     }
 
-    return Promise.reject(error);
+    // If already refreshing, queue the request
+    if (isRefreshing) {
+      return new Promise((resolve, reject) => {
+        failedQueue.push({ resolve, reject });
+      })
+        .then(token => {
+          originalRequest.headers.Authorization = `Bearer ${token}`;
+          return backendApi(originalRequest);
+        })
+        .catch(err => Promise.reject(err));
+    }
+
+    originalRequest._retry = true;
+    isRefreshing = true;
+
+    const refreshToken = localStorage.getItem('refresh_token');
+    if (!refreshToken) {
+      return Promise.reject(error);
+    }
+
+    try {
+      const response = await backendApi.post('/api/auth/refresh/', {
+        refresh: refreshToken
+      });
+
+      const { access } = response.data;
+      localStorage.setItem('access_token', access);
+      backendApi.defaults.headers.common['Authorization'] = `Bearer ${access}`;
+      originalRequest.headers.Authorization = `Bearer ${access}`;
+
+      processQueue(null, access);
+      return backendApi(originalRequest);
+    } catch (err) {
+      processQueue(err, null);
+      // Clear tokens and reject if refresh fails
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      return Promise.reject(err);
+    } finally {
+      isRefreshing = false;
+    }
   }
 );
 
@@ -156,10 +185,12 @@ export const registerUser = async (userData) => {
 
 export const loginUser = async (credentials) => {
   try {
-    const response = await backendApi.post(
-      "/api/auth/login/",
-      credentials
-    );
+    const response = await backendApi.post("/api/auth/login/", credentials);
+    // Store tokens in localStorage
+    localStorage.setItem('access_token', response.data.access);
+    localStorage.setItem('refresh_token', response.data.refresh);
+    // Update Authorization header for future requests
+    backendApi.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
     return response.data;
   } catch (error) {
     console.error("Error logging in user:", error);

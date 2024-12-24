@@ -1,57 +1,104 @@
+import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import { motion } from "framer-motion";
+import { X } from "lucide-react";
 
 const FilterSection = ({ filters, onFilterChange }) => {
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    onFilterChange({ ...filters, [name]: value });
+  const [selectedFilters, setSelectedFilters] = useState({
+    cuisine: filters.cuisine || "",
+    diet: filters.diet || "",
+    intolerances: filters.intolerances || "",
+  });
+
+  const cuisines = [
+    "African", "Asian", "American", "British", "Caribbean", "Chinese",
+    "European", "French", "German", "Greek", "Indian", "Italian",
+    "Japanese", "Korean", "Mediterranean", "Mexican", "Middle Eastern",
+    "Spanish", "Thai", "Vietnamese"
+  ];
+
+  const diets = [
+    "Gluten Free", "Ketogenic", "Vegetarian", "Lacto-Vegetarian",
+    "Ovo-Vegetarian", "Vegan", "Pescetarian", "Paleo", "Primal", "Low FODMAP",
+    "Whole30"
+  ];
+
+  const intolerances = [
+    "Dairy", "Egg", "Gluten", "Grain", "Peanut", "Seafood",
+    "Sesame", "Shellfish", "Soy", "Sulfite", "Tree Nut", "Wheat"
+  ];
+
+  useEffect(() => {
+    onFilterChange(selectedFilters);
+  }, [selectedFilters, onFilterChange]);
+
+  const handleFilterChange = (category, value) => {
+    setSelectedFilters((prev) => ({
+      ...prev,
+      [category]: prev[category] === value ? "" : value,
+    }));
   };
 
+  const renderFilterButtons = (options, category) => (
+    <div className="flex flex-wrap gap-2">
+      {options.map((option) => {
+        const isSelected = selectedFilters[category] === option;
+        return (
+          <motion.button
+            key={option}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => handleFilterChange(category, option)}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+              isSelected
+                ? "bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            {option}
+            {isSelected && (
+              <X className="inline-block ml-1 h-4 w-4" />
+            )}
+          </motion.button>
+        );
+      })}
+    </div>
+  );
+
   return (
-    <form className="mt-4">
-      <div className="mb-4">
-        <label htmlFor="cuisine" className="block mb-2 font-bold text-gray-700">
-          Cuisine
-        </label>
-        <select
-          id="cuisine"
-          name="cuisine"
-          value={filters.cuisine}
-          onChange={handleChange}
-          className="w-full px-4 py-2 text-gray-700 bg-white border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-peel"
-        >
-          <option value="">All</option>
-          <option value="african">African</option>
-          <option value="asian">Asian</option>
-          <option value="american">American</option>
-          <option value="british">British</option>
-          <option value="cajun">Cajun</option>
-          <option value="caribbean">Caribbean</option>
-          <option value="chinese">Chinese</option>
-          <option value="eastern_european">Eastern European</option>
-          <option value="european">European</option>
-          <option value="french">French</option>
-          <option value="german">German</option>
-          <option value="greek">Greek</option>
-          <option value="indian">Indian</option>
-          <option value="irish">Irish</option>
-          <option value="italian">Italian</option>
-          <option value="japanese">Japanese</option>
-          <option value="jewish">Jewish</option>
-          <option value="korean">Korean</option>
-          <option value="latin_american">Latin American</option>
-          <option value="mediterranean">Mediterranean</option>
-          <option value="mexican">Mexican</option>
-          <option value="middle_eastern">Middle Eastern</option>
-          <option value="nordic">Nordic</option>
-          <option value="southern">Southern</option>
-          <option value="spanish">Spanish</option>
-          <option value="thai">Thai</option>
-          <option value="vietnamese">Vietnamese</option>
-          {/* Add more cuisine options */}
-        </select>
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-3">Cuisine</h3>
+        {renderFilterButtons(cuisines, "cuisine")}
       </div>
-      {/* Add more filter options */}
-    </form>
+
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-3">Diet</h3>
+        {renderFilterButtons(diets, "diet")}
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-3">Intolerances</h3>
+        {renderFilterButtons(intolerances, "intolerances")}
+      </div>
+
+      {Object.values(selectedFilters).some(value => value) && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="flex justify-end"
+        >
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setSelectedFilters({ cuisine: "", diet: "", intolerances: "" })}
+            className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 focus:outline-none"
+          >
+            Clear all filters
+          </motion.button>
+        </motion.div>
+      )}
+    </div>
   );
 };
 

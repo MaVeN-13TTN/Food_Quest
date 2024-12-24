@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { motion } from "framer-motion";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { HeartIcon, BookmarkIcon } from "@heroicons/react/24/outline";
+import { HeartIcon, BookmarkIcon, ClockIcon, UserGroupIcon } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolidIcon, BookmarkIcon as BookmarkSolidIcon } from "@heroicons/react/24/solid";
 import { RecipeContext } from "../contexts/RecipeContext";
 import { addToFavorites, removeFromFavorites, addToBookmarks, removeFromBookmarks } from "../utils/api";
@@ -16,40 +16,30 @@ const RecipeCard = ({ recipe }) => {
   const [toast, setToast] = useState({ show: false, message: "", type: "success" });
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingAction, setPendingAction] = useState(null);
+  const [isHovered, setIsHovered] = useState(false);
 
-  // Handle both Spoonacular API (image) and our backend format (image_url)
   const imageUrl = recipe.image || recipe.image_url;
   const recipeId = recipe.id || recipe.recipe_id;
   const sourceUrl = recipe.sourceUrl || recipe.source_url || "";
   const readyInMinutes = recipe.readyInMinutes || recipe.ready_in_minutes;
   const dietsList = recipe.diets || [];
 
-  // Check if recipe is in favorites/bookmarks using recipe_id or id
   const isFavorite = favorites.some(
-    (favRecipe) => {
-      const favId = favRecipe.recipe_id || favRecipe.id;
-      const currentId = recipeId;
-      return Number(favId) === Number(currentId);
-    }
+    (favRecipe) => Number(favRecipe.recipe_id || favRecipe.id) === Number(recipeId)
   );
   
   const isBookmarked = bookmarks.some(
-    (bookmarkedRecipe) => {
-      const bookmarkId = bookmarkedRecipe.recipe_id || bookmarkedRecipe.id;
-      const currentId = recipeId;
-      return Number(bookmarkId) === Number(currentId);
-    }
+    (bookmarkedRecipe) => Number(bookmarkedRecipe.recipe_id || bookmarkedRecipe.id) === Number(recipeId)
   );
 
   const handleRemoveFavorite = async () => {
     try {
       await removeFromFavorites(recipeId);
       setFavorites(favorites.filter((favRecipe) => 
-        Number((favRecipe.recipe_id || favRecipe.id)) !== Number(recipeId)
+        Number(favRecipe.recipe_id || favRecipe.id) !== Number(recipeId)
       ));
       setToast({ show: true, message: "Removed from favorites", type: "success" });
     } catch (error) {
-      console.error('Error removing from favorites:', error);
       setToast({ 
         show: true, 
         message: error.response?.status === 401 ? "Please login to remove favorites" : "Error removing from favorites", 
@@ -62,11 +52,10 @@ const RecipeCard = ({ recipe }) => {
     try {
       await removeFromBookmarks(recipeId);
       setBookmarks(bookmarks.filter((bookmarkedRecipe) => 
-        Number((bookmarkedRecipe.recipe_id || bookmarkedRecipe.id)) !== Number(recipeId)
+        Number(bookmarkedRecipe.recipe_id || bookmarkedRecipe.id) !== Number(recipeId)
       ));
       setToast({ show: true, message: "Removed from bookmarks", type: "success" });
     } catch (error) {
-      console.error('Error removing from bookmarks:', error);
       setToast({ 
         show: true, 
         message: error.response?.status === 401 ? "Please login to remove bookmarks" : "Error removing from bookmarks", 
@@ -76,8 +65,8 @@ const RecipeCard = ({ recipe }) => {
   };
 
   const handleFavoriteClick = async (e) => {
-    e.preventDefault(); // Prevent navigation
-    e.stopPropagation(); // Stop event from bubbling up
+    e.preventDefault();
+    e.stopPropagation();
     if (isFavorite) {
       setPendingAction('favorite');
       setShowConfirmModal(true);
@@ -96,10 +85,9 @@ const RecipeCard = ({ recipe }) => {
         setFavorites([...favorites, newFavorite]);
         setToast({ show: true, message: "Added to favorites", type: "success" });
       } catch (error) {
-        console.error('Error adding to favorites:', error);
         setToast({ 
           show: true, 
-          message: error.response?.status === 401 ? "Please login to add favorites" : "Error adding to favorites", 
+          message: error.response?.status === 401 ? "Please login to add favorites" : "Error adding to favorites",
           type: "error" 
         });
       }
@@ -107,8 +95,8 @@ const RecipeCard = ({ recipe }) => {
   };
 
   const handleBookmarkClick = async (e) => {
-    e.preventDefault(); // Prevent navigation
-    e.stopPropagation(); // Stop event from bubbling up
+    e.preventDefault();
+    e.stopPropagation();
     if (isBookmarked) {
       setPendingAction('bookmark');
       setShowConfirmModal(true);
@@ -127,29 +115,24 @@ const RecipeCard = ({ recipe }) => {
         setBookmarks([...bookmarks, newBookmark]);
         setToast({ show: true, message: "Added to bookmarks", type: "success" });
       } catch (error) {
-        console.error('Error adding to bookmarks:', error);
         setToast({ 
           show: true, 
-          message: error.response?.status === 401 ? "Please login to add bookmarks" : "Error adding to bookmarks", 
+          message: error.response?.status === 401 ? "Please login to add bookmarks" : "Error adding to bookmarks",
           type: "error" 
         });
       }
     }
   };
 
-  const handleConfirmRemove = () => {
+  const handleConfirmAction = async () => {
     if (pendingAction === 'favorite') {
-      handleRemoveFavorite();
+      await handleRemoveFavorite();
     } else if (pendingAction === 'bookmark') {
-      handleRemoveBookmark();
+      await handleRemoveBookmark();
     }
     setShowConfirmModal(false);
     setPendingAction(null);
   };
-
-  if (!imageUrl || !recipe.title) {
-    return null; // Don't render cards with missing required data
-  }
 
   return (
     <>
@@ -160,84 +143,96 @@ const RecipeCard = ({ recipe }) => {
           onClose={() => setToast({ ...toast, show: false })}
         />
       )}
-      <ConfirmationModal
-        isOpen={showConfirmModal}
-        onClose={() => {
-          setShowConfirmModal(false);
-          setPendingAction(null);
-        }}
-        onConfirm={handleConfirmRemove}
-        title={`Remove ${pendingAction === 'favorite' ? 'Favorite' : 'Bookmark'}`}
-        message={`Are you sure you want to remove "${recipe.title}" from your ${
-          pendingAction === 'favorite' ? 'favorites' : 'bookmarks'
-        }?`}
-      />
+      {showConfirmModal && (
+        <ConfirmationModal
+          isOpen={showConfirmModal}
+          onClose={() => setShowConfirmModal(false)}
+          onConfirm={handleConfirmAction}
+          title={`Remove from ${pendingAction === 'favorite' ? 'Favorites' : 'Bookmarks'}`}
+          message={`Are you sure you want to remove "${recipe.title}" from your ${pendingAction === 'favorite' ? 'favorites' : 'bookmarks'}?`}
+        />
+      )}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+        className="relative bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+        whileHover={{ y: -5 }}
+        onHoverStart={() => setIsHovered(true)}
+        onHoverEnd={() => setIsHovered(false)}
       >
-        <div className="relative">
-          <Link to={`/recipe/${recipeId}`} className="block">
+        <Link to={`/recipe/${recipeId}`} className="block">
+          <div className="relative aspect-w-16 aspect-h-9">
             <LazyLoadImage
+              src={imageUrl}
               alt={recipe.title}
               effect="blur"
-              src={imageUrl}
               className="w-full h-48 object-cover"
             />
-          </Link>
-          <div className="absolute top-2 right-2 flex space-x-2 z-10">
-            <button
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+          </div>
+          
+          <div className="absolute top-2 right-2 flex space-x-2">
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
               onClick={handleFavoriteClick}
-              className="p-2 rounded-full bg-white/80 hover:bg-white transition-colors duration-200"
-              aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+              className="p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-md hover:bg-white transition-colors duration-200"
             >
               {isFavorite ? (
-                <HeartSolidIcon className="h-6 w-6 text-red-500" />
+                <HeartSolidIcon className="h-5 w-5 text-red-500" />
               ) : (
-                <HeartIcon className="h-6 w-6 text-gray-600 hover:text-red-500" />
+                <HeartIcon className="h-5 w-5 text-gray-600" />
               )}
-            </button>
-            <button
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
               onClick={handleBookmarkClick}
-              className="p-2 rounded-full bg-white/80 hover:bg-white transition-colors duration-200"
-              aria-label={isBookmarked ? "Remove from bookmarks" : "Add to bookmarks"}
+              className="p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-md hover:bg-white transition-colors duration-200"
             >
               {isBookmarked ? (
-                <BookmarkSolidIcon className="h-6 w-6 text-blue-500" />
+                <BookmarkSolidIcon className="h-5 w-5 text-blue-500" />
               ) : (
-                <BookmarkIcon className="h-6 w-6 text-gray-600 hover:text-blue-500" />
+                <BookmarkIcon className="h-5 w-5 text-gray-600" />
               )}
-            </button>
+            </motion.button>
           </div>
-          <Link to={`/recipe/${recipeId}`} className="block p-4">
-            <h2 className="text-xl font-bold mb-2 line-clamp-2">{recipe.title}</h2>
-            {readyInMinutes && recipe.servings && (
-              <div className="flex items-center justify-between text-gray-600 mb-2">
-                <span>{readyInMinutes} minutes</span>
-                <span>{recipe.servings} servings</span>
+
+          <div className="p-4">
+            <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 mb-2">
+              {recipe.title}
+            </h3>
+            
+            <div className="flex items-center space-x-4 text-sm text-gray-500">
+              <div className="flex items-center">
+                <ClockIcon className="h-4 w-4 mr-1" />
+                <span>{readyInMinutes} mins</span>
               </div>
-            )}
+              {recipe.servings && (
+                <div className="flex items-center">
+                  <UserGroupIcon className="h-4 w-4 mr-1" />
+                  <span>{recipe.servings} servings</span>
+                </div>
+              )}
+            </div>
+
             {dietsList.length > 0 && (
-              <div className="flex flex-wrap gap-1">
-                {dietsList.slice(0, 2).map((diet) => (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {dietsList.slice(0, 3).map((diet, index) => (
                   <span
-                    key={diet}
-                    className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full"
+                    key={index}
+                    className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800"
                   >
                     {diet}
                   </span>
                 ))}
-                {dietsList.length > 2 && (
-                  <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">
-                    +{dietsList.length - 2} more
+                {dietsList.length > 3 && (
+                  <span className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">
+                    +{dietsList.length - 3} more
                   </span>
                 )}
               </div>
             )}
-          </Link>
-        </div>
+          </div>
+        </Link>
       </motion.div>
     </>
   );
@@ -255,8 +250,8 @@ RecipeCard.propTypes = {
     readyInMinutes: PropTypes.number,
     ready_in_minutes: PropTypes.number,
     servings: PropTypes.number,
-    diets: PropTypes.arrayOf(PropTypes.string),
-  }).isRequired,
+    diets: PropTypes.arrayOf(PropTypes.string)
+  }).isRequired
 };
 
 export default RecipeCard;

@@ -1,7 +1,7 @@
 import { createContext, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { getFavorites, getBookmarks, checkAuthentication } from "../utils/api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 // Create context with default values
 export const RecipeContext = createContext({
@@ -21,6 +21,7 @@ export const RecipeProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const checkAuthStatus = async () => {
     try {
@@ -30,18 +31,22 @@ export const RecipeProvider = ({ children }) => {
     } catch (error) {
       console.error("Authentication check failed:", error);
       setIsAuthenticated(false);
-      // Only redirect to login if the error is 401
-      if (error.response?.status === 401) {
+      // Only redirect to login if the error is 401 and we're not already on the login or signup page
+      if (error.response?.status === 401 && 
+          !location.pathname.includes('/login') && 
+          !location.pathname.includes('/signup')) {
         navigate("/login");
       }
       return false;
     }
   };
 
-  // Check authentication status
+  // Check authentication status only when not on auth pages
   useEffect(() => {
-    checkAuthStatus();
-  }, []);
+    if (!location.pathname.includes('/login') && !location.pathname.includes('/signup')) {
+      checkAuthStatus();
+    }
+  }, [location.pathname]);
 
   // Load favorites and bookmarks only when authenticated
   useEffect(() => {
