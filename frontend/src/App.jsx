@@ -13,8 +13,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
   return (
-    <RecipeProvider>
-      <Router>
+    <Router>
+      <RecipeProvider>
         <div>
           <Navbar />
           <Routes>
@@ -50,21 +50,14 @@ const App = () => {
                 </ProtectedRoute>
               }
             />
-            <Route
-              path="/recipe/:id"
-              element={
-                <ProtectedRoute>
-                  <RecipeDetails />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/recipe/:id" element={<RecipeDetails />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
-      </Router>
-    </RecipeProvider>
+      </RecipeProvider>
+    </Router>
   );
 };
 
