@@ -99,12 +99,7 @@ const RecipeDetails = () => {
   if (!recipe) return null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="max-w-4xl mx-auto px-4 py-8"
-    >
+    <>
       {toast.show && (
         <Toast
           message={toast.message}
@@ -112,102 +107,109 @@ const RecipeDetails = () => {
           onClose={() => setToast({ ...toast, show: false })}
         />
       )}
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-        <div className="relative">
-          <img
-            src={recipe.image}
-            alt={recipe.title}
-            className="w-full h-96 object-cover"
-          />
-          <div className="absolute top-4 right-4 flex space-x-2">
-            <button
-              onClick={handleFavoriteClick}
-              className="p-3 rounded-full bg-white/80 hover:bg-white transition-colors duration-200"
-            >
-              {isFavorite ? (
-                <HeartSolidIcon className="h-8 w-8 text-red-500" />
-              ) : (
-                <HeartIcon className="h-8 w-8 text-gray-600 hover:text-red-500" />
-              )}
-            </button>
-            <button
-              onClick={handleBookmarkClick}
-              className="p-3 rounded-full bg-white/80 hover:bg-white transition-colors duration-200"
-            >
-              {isBookmarked ? (
-                <BookmarkSolidIcon className="h-8 w-8 text-blue-500" />
-              ) : (
-                <BookmarkIcon className="h-8 w-8 text-gray-600 hover:text-blue-500" />
-              )}
-            </button>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="max-w-4xl mx-auto px-4 py-8 mt-16 sm:mt-20"
+      >
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+          <div className="relative">
+            <img
+              src={recipe.image}
+              alt={recipe.title}
+              className="w-full h-96 object-cover"
+            />
+            <div className="absolute top-4 right-4 flex space-x-2">
+              <button
+                onClick={handleFavoriteClick}
+                className="p-3 rounded-full bg-white/80 hover:bg-white transition-colors duration-200"
+              >
+                {isFavorite ? (
+                  <HeartSolidIcon className="h-8 w-8 text-red-500" />
+                ) : (
+                  <HeartIcon className="h-8 w-8 text-gray-600 hover:text-red-500" />
+                )}
+              </button>
+              <button
+                onClick={handleBookmarkClick}
+                className="p-3 rounded-full bg-white/80 hover:bg-white transition-colors duration-200"
+              >
+                {isBookmarked ? (
+                  <BookmarkSolidIcon className="h-8 w-8 text-blue-500" />
+                ) : (
+                  <BookmarkIcon className="h-8 w-8 text-gray-600 hover:text-blue-500" />
+                )}
+              </button>
+            </div>
           </div>
-        </div>
-        
-        <div className="p-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">{recipe.title}</h1>
           
-          <div className="flex items-center space-x-6 mb-6">
-            <div className="flex items-center text-gray-600">
-              <ClockIcon className="h-5 w-5 mr-2" />
-              <span>{recipe.readyInMinutes} mins</span>
-            </div>
-            <div className="flex items-center text-gray-600">
-              <UserIcon className="h-5 w-5 mr-2" />
-              <span>{recipe.servings} servings</span>
-            </div>
-          </div>
-
-          {recipe.diets && recipe.diets.length > 0 && (
-            <div className="mb-6">
-              <h2 className="text-xl font-semibold mb-2">Dietary Info</h2>
-              <div className="flex flex-wrap gap-2">
-                {recipe.diets.map((diet) => (
-                  <span
-                    key={diet}
-                    className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm"
-                  >
-                    {diet}
-                  </span>
-                ))}
+          <div className="p-6">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">{recipe.title}</h1>
+            
+            <div className="flex items-center space-x-6 mb-6">
+              <div className="flex items-center text-gray-600">
+                <ClockIcon className="h-5 w-5 mr-2" />
+                <span>{recipe.readyInMinutes} mins</span>
+              </div>
+              <div className="flex items-center text-gray-600">
+                <UserIcon className="h-5 w-5 mr-2" />
+                <span>{recipe.servings} servings</span>
               </div>
             </div>
-          )}
 
-          {recipe.summary && (
-            <div className="mb-6">
-              <h2 className="text-xl font-semibold mb-2">Summary</h2>
-              <div 
-                className="text-gray-700 prose max-w-none"
-                dangerouslySetInnerHTML={{ __html: recipe.summary }}
-              />
-            </div>
-          )}
+            {recipe.diets && recipe.diets.length > 0 && (
+              <div className="mb-6">
+                <h2 className="text-xl font-semibold mb-2">Dietary Info</h2>
+                <div className="flex flex-wrap gap-2">
+                  {recipe.diets.map((diet) => (
+                    <span
+                      key={diet}
+                      className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm"
+                    >
+                      {diet}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
 
-          {recipe.instructions && (
-            <div className="mb-6">
-              <h2 className="text-xl font-semibold mb-2">Instructions</h2>
-              <div 
-                className="text-gray-700 prose max-w-none"
-                dangerouslySetInnerHTML={{ __html: recipe.instructions }}
-              />
-            </div>
-          )}
+            {recipe.summary && (
+              <div className="mb-6">
+                <h2 className="text-xl font-semibold mb-2">Summary</h2>
+                <div 
+                  className="text-gray-700 prose max-w-none"
+                  dangerouslySetInnerHTML={{ __html: recipe.summary }}
+                />
+              </div>
+            )}
 
-          {recipe.extendedIngredients && (
-            <div>
-              <h2 className="text-xl font-semibold mb-2">Ingredients</h2>
-              <ul className="list-disc list-inside space-y-2">
-                {recipe.extendedIngredients.map((ingredient, index) => (
-                  <li key={index} className="text-gray-700">
-                    {ingredient.original}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+            {recipe.instructions && (
+              <div className="mb-6">
+                <h2 className="text-xl font-semibold mb-2">Instructions</h2>
+                <div 
+                  className="text-gray-700 prose max-w-none"
+                  dangerouslySetInnerHTML={{ __html: recipe.instructions }}
+                />
+              </div>
+            )}
+
+            {recipe.extendedIngredients && (
+              <div>
+                <h2 className="text-xl font-semibold mb-2">Ingredients</h2>
+                <ul className="list-disc list-inside space-y-2">
+                  {recipe.extendedIngredients.map((ingredient, index) => (
+                    <li key={index} className="text-gray-700">
+                      {ingredient.original}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
+    </>
   );
 };
 

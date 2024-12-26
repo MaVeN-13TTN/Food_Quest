@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, BookOpen, ChefHat, ExternalLink } from "lucide-react";
+import { Heart, BookOpen, ChefHat } from "lucide-react";
 import PropTypes from 'prop-types';
 import { Link } from "react-router-dom";
 import RecipeCard from "../components/RecipeCard";
@@ -141,17 +141,10 @@ const ProfilePage = () => {
           className="mb-12"
         >
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 flex items-center">
-              <Heart className="w-6 h-6 text-red-500 mr-2" />
+            <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+              <Heart className="w-6 h-6 text-red-500" />
               Favorite Recipes
             </h2>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="text-sm text-gray-600 hover:text-gray-900 transition-colors duration-200"
-            >
-              <ExternalLink className="w-4 h-4" />
-            </motion.button>
           </div>
           <RecipeGrid recipes={processedFavorites} type="favorite" />
         </motion.div>
@@ -163,17 +156,10 @@ const ProfilePage = () => {
           transition={{ delay: 0.4 }}
         >
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 flex items-center">
-              <BookOpen className="w-6 h-6 text-orange-500 mr-2" />
+            <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+              <BookOpen className="w-6 h-6 text-orange-500" />
               Bookmarked Recipes
             </h2>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="text-sm text-gray-600 hover:text-gray-900 transition-colors duration-200"
-            >
-              <ExternalLink className="w-4 h-4" />
-            </motion.button>
           </div>
           <RecipeGrid recipes={processedBookmarks} type="bookmarked" />
         </motion.div>

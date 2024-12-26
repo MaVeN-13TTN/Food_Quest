@@ -35,7 +35,16 @@ const NotFound = () => {
             transition={{ delay: 0.3 }}
             className="text-lg text-gray-600 mb-8"
           >
-            Oops! The page you're looking for doesn't exist or has been moved.
+            Oops! The page you&apos;re looking for doesn&apos;t exist or has been moved.
+          </motion.p>
+
+          <motion.p
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="mt-4 text-gray-600"
+          >
+            Looks like you&apos;ve taken a wrong turn. Let&apos;s get you back on track!
           </motion.p>
 
           <motion.div

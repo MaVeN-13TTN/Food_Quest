@@ -5,7 +5,7 @@ const Toast = ({ message, type = "success", onClose }) => {
 
   return (
     <div
-      className={`fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded shadow-lg flex items-center`}
+      className={`fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded shadow-lg flex items-center z-50`}
     >
       <span>{message}</span>
       <button
