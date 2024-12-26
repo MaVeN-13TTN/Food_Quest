@@ -13,14 +13,22 @@ const Home = () => {
   const [error, setError] = useState(null);
 
   const handleSearch = async (query, filters) => {
+    if (!query && !Object.values(filters).some(value => value)) {
+      setRecipes([]);
+      return;
+    }
+    
     setIsLoading(true);
     setError(null);
     try {
       const data = await searchRecipes(query, filters);
       setRecipes(data);
     } catch (err) {
-      setError("Failed to fetch recipes. Please try again.");
-      console.error("Error fetching recipes:", err);
+      const errorMessage = err.message === 'API key is not configured. Please check your environment variables.'
+        ? 'API configuration error. Please contact support.'
+        : 'Failed to fetch recipes. Please try again.';
+      setError(errorMessage);
+      console.error("Error in search:", err);
     } finally {
       setIsLoading(false);
     }

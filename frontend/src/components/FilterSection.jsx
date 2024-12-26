@@ -1,14 +1,13 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { motion } from "framer-motion";
 import { X } from "lucide-react";
 
 const FilterSection = ({ filters, onFilterChange }) => {
-  const [selectedFilters, setSelectedFilters] = useState({
-    cuisine: filters.cuisine || "",
-    diet: filters.diet || "",
-    intolerances: filters.intolerances || "",
-  });
+  const [selectedFilters, setSelectedFilters] = useState(filters);
+
+  useEffect(() => {
+    setSelectedFilters(filters);
+  }, [filters]);
 
   const cuisines = [
     "African", "Asian", "American", "British", "Caribbean", "Chinese",
@@ -19,8 +18,8 @@ const FilterSection = ({ filters, onFilterChange }) => {
 
   const diets = [
     "Gluten Free", "Ketogenic", "Vegetarian", "Lacto-Vegetarian",
-    "Ovo-Vegetarian", "Vegan", "Pescetarian", "Paleo", "Primal", "Low FODMAP",
-    "Whole30"
+    "Ovo-Vegetarian", "Vegan", "Pescetarian", "Paleo", "Primal", 
+    "Low FODMAP", "Whole30"
   ];
 
   const intolerances = [
@@ -28,15 +27,13 @@ const FilterSection = ({ filters, onFilterChange }) => {
     "Sesame", "Shellfish", "Soy", "Sulfite", "Tree Nut", "Wheat"
   ];
 
-  useEffect(() => {
-    onFilterChange(selectedFilters);
-  }, [selectedFilters, onFilterChange]);
-
   const handleFilterChange = (category, value) => {
-    setSelectedFilters((prev) => ({
-      ...prev,
-      [category]: prev[category] === value ? "" : value,
-    }));
+    const newFilters = {
+      ...selectedFilters,
+      [category]: selectedFilters[category] === value ? "" : value,
+    };
+    setSelectedFilters(newFilters);
+    onFilterChange(newFilters);
   };
 
   const renderFilterButtons = (options, category) => (
@@ -44,59 +41,59 @@ const FilterSection = ({ filters, onFilterChange }) => {
       {options.map((option) => {
         const isSelected = selectedFilters[category] === option;
         return (
-          <motion.button
+          <button
             key={option}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
             onClick={() => handleFilterChange(category, option)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
               isSelected
-                ? "bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg"
+                ? "bg-orange-500 text-white shadow-sm"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
             {option}
             {isSelected && (
-              <X className="inline-block ml-1 h-4 w-4" />
+              <X className="inline-block ml-1 h-3 w-3" />
             )}
-          </motion.button>
+          </button>
         );
       })}
     </div>
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-3">Cuisine</h3>
+        <h3 className="text-sm font-semibold text-gray-900 mb-2">Cuisine</h3>
         {renderFilterButtons(cuisines, "cuisine")}
       </div>
 
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-3">Diet</h3>
+        <h3 className="text-sm font-semibold text-gray-900 mb-2">Diet</h3>
         {renderFilterButtons(diets, "diet")}
       </div>
 
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-3">Intolerances</h3>
+        <h3 className="text-sm font-semibold text-gray-900 mb-2">Intolerances</h3>
         {renderFilterButtons(intolerances, "intolerances")}
       </div>
 
       {Object.values(selectedFilters).some(value => value) && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="flex justify-end"
-        >
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setSelectedFilters({ cuisine: "", diet: "", intolerances: "" })}
-            className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 focus:outline-none"
+        <div className="flex justify-end pt-2">
+          <button
+            onClick={() => {
+              const clearedFilters = {
+                cuisine: "",
+                diet: "",
+                intolerances: "",
+              };
+              setSelectedFilters(clearedFilters);
+              onFilterChange(clearedFilters);
+            }}
+            className="text-sm font-medium text-red-600 hover:text-red-700"
           >
             Clear all filters
-          </motion.button>
-        </motion.div>
+          </button>
+        </div>
       )}
     </div>
   );

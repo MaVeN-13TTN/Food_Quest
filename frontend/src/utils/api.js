@@ -116,18 +116,39 @@ api.interceptors.response.use(
   }
 );
 
-export const searchRecipes = async (query, cuisine) => {
+export const searchRecipes = async (query, filters) => {
   try {
+    if (!API_KEY) {
+      throw new Error('API key is not configured. Please check your environment variables.');
+    }
+    
+    console.log('Making API request with:', {
+      baseURL: API_BASE_URL,
+      query,
+      filters,
+    });
+    
     const response = await api.get("/recipes/complexSearch", {
       params: {
         query,
-        cuisine,
+        ...filters,
         addRecipeInformation: true,
+        number: 12,
       },
     });
-    return response.data;
+    
+    if (!response.data || !response.data.results) {
+      console.error('Unexpected API response:', response.data);
+      throw new Error('Invalid API response format');
+    }
+    
+    return response.data.results;
   } catch (error) {
-    console.error("Error searching recipes:", error);
+    console.error("Error searching recipes:", {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+    });
     throw error;
   }
 };
@@ -211,7 +232,7 @@ export const checkAuthentication = async () => {
 export const addToFavorites = async (recipe) => {
   try {
     const response = await backendApi.post("/api/favorites/", {
-      recipe_id: recipe.id,
+      recipe_id: Number(recipe.id),
       title: recipe.title,
       image_url: recipe.image,
       source_url: recipe.sourceUrl || "",
@@ -228,10 +249,11 @@ export const addToFavorites = async (recipe) => {
 
 export const removeFromFavorites = async (recipeId) => {
   try {
-    await backendApi.delete(`/api/favorites/${recipeId}/`);
+    await backendApi.delete(`/api/favorites/${Number(recipeId)}/`);
   } catch (error) {
     console.error("Error removing recipe from favorites:", error);
     if (error.response?.status === 404) {
+      console.error("Recipe not found in favorites, ID:", recipeId);
       throw new Error("Recipe not found in favorites");
     } else if (error.response?.status === 401) {
       throw new Error("Please login to remove favorites");
@@ -253,7 +275,7 @@ export const getFavorites = async () => {
 export const addToBookmarks = async (recipe) => {
   try {
     const response = await backendApi.post("/api/bookmarks/", {
-      recipe_id: recipe.id,
+      recipe_id: Number(recipe.id),
       title: recipe.title,
       image_url: recipe.image,
       source_url: recipe.sourceUrl || "",
@@ -270,10 +292,11 @@ export const addToBookmarks = async (recipe) => {
 
 export const removeFromBookmarks = async (recipeId) => {
   try {
-    await backendApi.delete(`/api/bookmarks/${recipeId}/`);
+    await backendApi.delete(`/api/bookmarks/${Number(recipeId)}/`);
   } catch (error) {
     console.error("Error removing recipe from bookmarks:", error);
     if (error.response?.status === 404) {
+      console.error("Recipe not found in bookmarks, ID:", recipeId);
       throw new Error("Recipe not found in bookmarks");
     } else if (error.response?.status === 401) {
       throw new Error("Please login to remove bookmarks");

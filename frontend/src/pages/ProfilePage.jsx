@@ -62,8 +62,10 @@ const RecipeGrid = ({ recipes, type }) => (
 RecipeGrid.propTypes = {
   recipes: PropTypes.arrayOf(
     PropTypes.shape({
-      recipe_id: PropTypes.string.isRequired,
-      // Add other recipe properties that are used in RecipeCard
+      recipe_id: PropTypes.number.isRequired,
+      title: PropTypes.string.isRequired,
+      image_url: PropTypes.string,
+      source_url: PropTypes.string,
     })
   ).isRequired,
   type: PropTypes.oneOf(['favorite', 'bookmarked']).isRequired,
@@ -94,6 +96,17 @@ const ProfilePage = () => {
       </div>
     );
   }
+
+  // Convert recipe_id to number for consistent handling
+  const processedFavorites = favorites.map(recipe => ({
+    ...recipe,
+    recipe_id: Number(recipe.recipe_id || recipe.id)
+  }));
+
+  const processedBookmarks = bookmarks.map(recipe => ({
+    ...recipe,
+    recipe_id: Number(recipe.recipe_id || recipe.id)
+  }));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
@@ -140,7 +153,7 @@ const ProfilePage = () => {
               <ExternalLink className="w-4 h-4" />
             </motion.button>
           </div>
-          <RecipeGrid recipes={favorites} type="favorite" />
+          <RecipeGrid recipes={processedFavorites} type="favorite" />
         </motion.div>
 
         {/* Bookmarks Section */}
@@ -162,7 +175,7 @@ const ProfilePage = () => {
               <ExternalLink className="w-4 h-4" />
             </motion.button>
           </div>
-          <RecipeGrid recipes={bookmarks} type="bookmarked" />
+          <RecipeGrid recipes={processedBookmarks} type="bookmarked" />
         </motion.div>
       </div>
     </div>

@@ -16,30 +16,31 @@ const RecipeCard = ({ recipe }) => {
   const [toast, setToast] = useState({ show: false, message: "", type: "success" });
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingAction, setPendingAction] = useState(null);
-  const [isHovered, setIsHovered] = useState(false);
 
   const imageUrl = recipe.image || recipe.image_url;
-  const recipeId = recipe.id || recipe.recipe_id;
+  const recipeId = Number(recipe.recipe_id || recipe.id);
   const sourceUrl = recipe.sourceUrl || recipe.source_url || "";
   const readyInMinutes = recipe.readyInMinutes || recipe.ready_in_minutes;
   const dietsList = recipe.diets || [];
 
   const isFavorite = favorites.some(
-    (favRecipe) => Number(favRecipe.recipe_id || favRecipe.id) === Number(recipeId)
+    (favRecipe) => Number(favRecipe.recipe_id || favRecipe.id) === recipeId
   );
   
   const isBookmarked = bookmarks.some(
-    (bookmarkedRecipe) => Number(bookmarkedRecipe.recipe_id || bookmarkedRecipe.id) === Number(recipeId)
+    (bookmarkedRecipe) => Number(bookmarkedRecipe.recipe_id || bookmarkedRecipe.id) === recipeId
   );
 
   const handleRemoveFavorite = async () => {
     try {
-      await removeFromFavorites(recipeId);
+      const idToRemove = Number(recipe.recipe_id || recipe.id);
+      await removeFromFavorites(idToRemove);
       setFavorites(favorites.filter((favRecipe) => 
-        Number(favRecipe.recipe_id || favRecipe.id) !== Number(recipeId)
+        String(favRecipe.recipe_id || favRecipe.id) !== String(idToRemove)
       ));
       setToast({ show: true, message: "Removed from favorites", type: "success" });
     } catch (error) {
+      console.error("Error removing from favorites:", error);
       setToast({ 
         show: true, 
         message: error.response?.status === 401 ? "Please login to remove favorites" : "Error removing from favorites", 
@@ -50,12 +51,14 @@ const RecipeCard = ({ recipe }) => {
 
   const handleRemoveBookmark = async () => {
     try {
-      await removeFromBookmarks(recipeId);
+      const idToRemove = Number(recipe.recipe_id || recipe.id);
+      await removeFromBookmarks(idToRemove);
       setBookmarks(bookmarks.filter((bookmarkedRecipe) => 
-        Number(bookmarkedRecipe.recipe_id || bookmarkedRecipe.id) !== Number(recipeId)
+        String(bookmarkedRecipe.recipe_id || bookmarkedRecipe.id) !== String(idToRemove)
       ));
       setToast({ show: true, message: "Removed from bookmarks", type: "success" });
     } catch (error) {
+      console.error("Error removing from bookmarks:", error);
       setToast({ 
         show: true, 
         message: error.response?.status === 401 ? "Please login to remove bookmarks" : "Error removing from bookmarks", 
@@ -155,8 +158,6 @@ const RecipeCard = ({ recipe }) => {
       <motion.div
         className="relative bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
         whileHover={{ y: -5 }}
-        onHoverStart={() => setIsHovered(true)}
-        onHoverEnd={() => setIsHovered(false)}
       >
         <Link to={`/recipe/${recipeId}`} className="block">
           <div className="relative aspect-w-16 aspect-h-9">
@@ -240,8 +241,8 @@ const RecipeCard = ({ recipe }) => {
 
 RecipeCard.propTypes = {
   recipe: PropTypes.shape({
-    id: PropTypes.number,
-    recipe_id: PropTypes.number,
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    recipe_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     title: PropTypes.string.isRequired,
     image: PropTypes.string,
     image_url: PropTypes.string,
